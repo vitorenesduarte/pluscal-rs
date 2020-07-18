@@ -70,7 +70,6 @@ impl std::fmt::Display for Module {
 
         lines.push(String::new());
         lines.push(String::from("begin"));
-        lines.push(String::new());
         lines.push(self.root.to_pluscal(0));
         lines.push(String::new());
         lines.push(String::from("end algorithm *)"));

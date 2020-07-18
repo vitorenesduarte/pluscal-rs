@@ -1,7 +1,7 @@
 use pluscal::prelude::*;
 
 fn main() {
-    let mut module = Module::new("tranfer");
+    let mut module = Module::new("transfer");
     module.extends("Naturals");
     module.extends("TLC");
 

@@ -5,7 +5,7 @@ Let's write some PlusCal in Rust!
 ### The What
 
 ```rust
-let mut module = Module::new("tranfer");
+let mut module = Module::new("transfer");
 module.extends("Naturals");
 module.extends("TLC");
 
@@ -31,10 +31,10 @@ println!("{}", module);
 The above Rust code outputs (example from the [Learn TLA+ website](https://learntla.com/introduction/example/)):
 
 ```pluscal
----- MODULE tranfer ----
+---- MODULE transfer ----
 EXTENDS Naturals, TLC
 
-(* --algorithm tranfer
+(* --algorithm transfer
 
 variables
     alice = 10,
