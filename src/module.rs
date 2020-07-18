@@ -8,7 +8,7 @@ pub struct Module {
     extends: Vec<String>,
     vars: HashSet<String>,
     pub(crate) natural_vars: Vec<NaturalVar>,
-    labels: Vec<Label>,
+    root: Label,
 }
 
 impl Module {
@@ -18,7 +18,7 @@ impl Module {
             extends: Vec::new(),
             vars: HashSet::new(),
             natural_vars: Vec::new(),
-            labels: Vec::new(),
+            root: Label::unnamed(),
         }
     }
 
@@ -34,9 +34,7 @@ impl Module {
     }
 
     pub fn label(&mut self, name: impl ToString) -> &mut Label {
-        let label = Label::new(name);
-        self.labels.push(label);
-        self.labels.last_mut().unwrap()
+        self.root.label(name)
     }
 }
 
@@ -73,11 +71,8 @@ impl std::fmt::Display for Module {
         lines.push(String::new());
         lines.push(String::from("begin"));
         lines.push(String::new());
-
-        for label in &self.labels {
-            lines.push(label.to_pluscal(0));
-        }
-
+        lines.push(self.root.to_pluscal(0));
+        lines.push(String::new());
         lines.push(String::from("end algorithm *)"));
         lines.push(String::from("===="));
 

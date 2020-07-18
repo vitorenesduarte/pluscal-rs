@@ -1,12 +1,20 @@
 use crate::attr::Attr;
 use crate::cond::Conditional;
-use crate::if_::IfBuilder;
+use crate::if_::{If, IfBuilder};
 use crate::{Instruction, ToPlusCal};
+use std::any::Any;
 
 #[derive(Debug)]
 pub struct Label {
     name: Option<String>,
-    pub(crate) instructions: Vec<Box<dyn Instruction>>,
+    pub(crate) instructions: Vec<(InstructionType, Box<dyn Any>)>,
+}
+
+#[derive(Debug)]
+pub(crate) enum InstructionType {
+    Attr,
+    If,
+    Label,
 }
 
 impl Label {
@@ -24,8 +32,23 @@ impl Label {
         }
     }
 
+    pub fn label(&mut self, name: impl ToString) -> &mut Label {
+        let label = Label::new(name);
+        self.instructions
+            .push((InstructionType::Label, Box::new(label)));
+        // get the last added instruction (casted to `Label`)
+        self.instructions
+            .last_mut()
+            .unwrap()
+            .1
+            .as_mut()
+            .downcast_mut::<Label>()
+            .unwrap()
+    }
+
     pub fn exec(&mut self, attr: Attr) {
-        self.instructions.push(Box::new(attr));
+        self.instructions
+            .push((InstructionType::Attr, Box::new(attr)));
     }
 
     pub fn if_(&mut self, conditional: Conditional) -> IfBuilder<'_> {
@@ -50,8 +73,21 @@ impl ToPlusCal for Label {
             0 => panic!("found label without instructions"),
             _ => {
                 for instr in &self.instructions {
-                    s.push_str(&instr.to_pluscal(indent));
-                    s.push(crate::NEW_LINE);
+                    let instr = match instr {
+                        (InstructionType::Attr, instr) => {
+                            instr.downcast_ref::<Attr>().unwrap().to_pluscal(indent)
+                        }
+                        (InstructionType::If, instr) => {
+                            instr.downcast_ref::<If>().unwrap().to_pluscal(indent)
+                        }
+                        (InstructionType::Label, instr) => {
+                            instr.downcast_ref::<Label>().unwrap().to_pluscal(indent)
+                        }
+                    };
+                    s.push_str(&instr);
+                    if self.instructions.len() > 1 {
+                        s.push(crate::NEW_LINE);
+                    }
                 }
             }
         }

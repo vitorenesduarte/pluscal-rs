@@ -33,7 +33,9 @@ impl<'a> IfBuilder<'a> {
 
     pub fn end_if(self) {
         let instr = If::new(self.conditional, self.then_label, self.else_label);
-        self.parent.instructions.push(Box::new(instr));
+        self.parent
+            .instructions
+            .push((crate::label::InstructionType::If, Box::new(instr)));
     }
 }
 

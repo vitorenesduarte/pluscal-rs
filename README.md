@@ -17,8 +17,11 @@ let transfer = module.label("Transfer");
 transfer
     .if_(alice.ge(&money))
     .then(|ctx| {
-        ctx.exec(alice.set(alice.minus(&money)));
-        ctx.exec(bob.set(bob.plus(&money)));
+        let a = ctx.label("A");
+        a.exec(alice.set(alice.minus(&money)));
+
+        let b = ctx.label("B");
+        b.exec(bob.set(bob.plus(&money)));
     })
     .end_if();
 
@@ -42,8 +45,10 @@ begin
 
 Transfer:
     if alice >= money then
-        alice := alice - money;
-        bob := bob + money;
+        A:
+            alice := alice - money;
+        B:
+            bob := bob + money;
     end if;
 
 end algorithm *)
