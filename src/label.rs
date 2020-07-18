@@ -33,21 +33,25 @@ impl Label {
     }
 }
 
+impl Instruction for Label {}
+
 impl ToPlusCal for Label {
     fn to_pluscal(&self, indent: usize) -> String {
         let mut s = String::new();
-        if let Some(name) = &self.name {
+        let indent = if let Some(name) = &self.name {
             s.push_str(&format!("{}{}:", Self::space(indent), name));
-        }
+            s.push(crate::NEW_LINE);
+            indent + crate::TAB_SIZE
+        } else {
+            // only increase indent if there's a label
+            indent
+        };
         match self.instructions.len() {
             0 => panic!("found label without instructions"),
-            1 => {
-                s.push_str(&self.instructions[0].to_pluscal(0));
-            }
             _ => {
                 for instr in &self.instructions {
+                    s.push_str(&instr.to_pluscal(indent));
                     s.push(crate::NEW_LINE);
-                    s.push_str(&instr.to_pluscal(indent + crate::TAB_SIZE));
                 }
             }
         }

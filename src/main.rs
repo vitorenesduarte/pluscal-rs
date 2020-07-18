@@ -29,15 +29,14 @@ fn main() {
     let bob = module.natural("bob").value(10);
     let money = module.natural("money").in_range(1, 20);
 
-    let mut transfer = module.label("Transfer");
+    let transfer = module.label("Transfer");
     transfer
         .if_(alice.ge(&money))
         .then(|ctx| {
-            // let mut a = ctx.label("A");
             ctx.exec(alice.set(alice.minus(&money)));
             ctx.exec(bob.set(bob.plus(&money)));
         })
         .end_if();
 
-    println!("{}", module.to_string());
+    println!("{}", module);
 }

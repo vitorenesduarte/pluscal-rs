@@ -1,20 +1,56 @@
-### pluscal-rs
+## pluscal-rs
 
 Let's write some PlusCal in Rust! 
 
-#### The What
+### The What
 
 ```rust
+let mut module = Module::new("tranfer");
+module.extends("Naturals");
+module.extends("TLC");
 
+let alice = module.natural("alice").value(10);
+let bob = module.natural("bob").value(10);
+let money = module.natural("money").in_range(1, 20);
+
+let transfer = module.label("Transfer");
+transfer
+.if_(alice.ge(&money))
+.then(|ctx| {
+    ctx.exec(alice.set(alice.minus(&money)));
+    ctx.exec(bob.set(bob.plus(&money)));
+})
+.end_if();
+
+println!("{}", module);
 ```
 
 The above Rust code outputs:
 
+```pluscal
+---- MODULE tranfer ----
+EXTENDS Naturals, TLC
+
+(* --algorithm tranfer
+
+variables
+    alice = 10,
+    bob = 10,
+    money \in 1..20;
+
+begin
+
+Transfer:
+    if alice >= money then
+        alice := alice - money;
+        bob := bob + money;
+    end if;
+
+end algorithm *)
+====
 ```
 
-```
-
-#### The Why
+### The Why
 
 I'm afraid I don't have a good answer. I can at least blame [this PLTalk](https://www.twitch.tv/videos/682775459) with Jean Yang, Hongyi Hu and Hillel Wayne on Practical Formal Methods.
 

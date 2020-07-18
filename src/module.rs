@@ -33,11 +33,15 @@ impl Module {
         NaturalVarBuilder::new(name, self)
     }
 
-    pub fn label(&mut self, name: impl ToString) -> Label {
-        Label::new(name)
+    pub fn label(&mut self, name: impl ToString) -> &mut Label {
+        let label = Label::new(name);
+        self.labels.push(label);
+        self.labels.last_mut().unwrap()
     }
+}
 
-    pub fn to_string(&self) -> String {
+impl std::fmt::Display for Module {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         let mut lines = Vec::new();
 
         let module = ["---- MODULE ", &self.name, " ----"].concat();
@@ -51,15 +55,15 @@ impl Module {
         lines.push(String::new());
 
         if !self.vars.is_empty() {
-            let mut variables = String::from("variables ");
-            variables.push(crate::NEW_LINE);
-
+            let mut variables = String::from("variables");
             let declarations = self
                 .natural_vars
                 .iter()
-                .map(|var| var.to_pluscal(variables.len()))
+                .map(|var| var.to_pluscal(crate::TAB_SIZE))
                 .collect::<Vec<_>>()
                 .join(&format!(",{}", crate::NEW_LINE));
+
+            variables.push(crate::NEW_LINE);
             variables.push_str(&declarations);
             variables.push(';');
 
@@ -70,17 +74,13 @@ impl Module {
         lines.push(String::from("begin"));
         lines.push(String::new());
 
-        for label in dbg!(&self.labels) {
+        for label in &self.labels {
             lines.push(label.to_pluscal(0));
-            lines.push(crate::NEW_LINE.to_string());
         }
 
-        lines.push(String::from("end"));
-        lines.push(String::new());
-        lines.push(String::from("algorithm *)"));
-        lines.push(String::new());
+        lines.push(String::from("end algorithm *)"));
         lines.push(String::from("===="));
 
-        lines.join(&crate::NEW_LINE.to_string())
+        write!(f, "{}", lines.join(&crate::NEW_LINE.to_string()))
     }
 }

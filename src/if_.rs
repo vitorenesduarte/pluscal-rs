@@ -61,16 +61,16 @@ impl ToPlusCal for If {
         let mut s = String::new();
         s.push_str(&format!("{}if ", Self::space(indent)));
         s.push_str(&self.conditional.to_pluscal(0));
+
         s.push_str(" then");
         s.push(crate::NEW_LINE);
-
         if let Some(label) = &self.then_label {
             s.push_str(&label.to_pluscal(indent + crate::TAB_SIZE));
         }
 
-        s.push_str(&format!("{}else ", Self::space(indent)));
-        s.push(crate::NEW_LINE);
         if let Some(label) = &self.else_label {
+            s.push_str(&format!("{}else ", Self::space(indent)));
+            s.push(crate::NEW_LINE);
             s.push_str(&label.to_pluscal(indent + crate::TAB_SIZE));
         }
 
