@@ -1,20 +1,20 @@
-use crate::cond::Conditional;
+use crate::cond::Cond;
 use crate::label::Label;
 use crate::{Instruction, ToPlusCal};
 
 #[must_use]
 pub struct IfBuilder<'a> {
     parent: &'a mut Label,
-    conditional: Conditional,
+    cond: Cond,
     then_label: Option<Label>,
     else_label: Option<Label>,
 }
 
 impl<'a> IfBuilder<'a> {
-    pub(crate) fn new(parent: &'a mut Label, conditional: Conditional) -> Self {
+    pub(crate) fn new(parent: &'a mut Label, cond: Cond) -> Self {
         Self {
             parent,
-            conditional,
+            cond,
             then_label: None,
             else_label: None,
         }
@@ -32,7 +32,7 @@ impl<'a> IfBuilder<'a> {
     }
 
     pub fn end_if(self) {
-        let instr = If::new(self.conditional, self.then_label, self.else_label);
+        let instr = If::new(self.cond, self.then_label, self.else_label);
         self.parent
             .instructions
             .push((crate::label::InstructionType::If, Box::new(instr)));
@@ -41,15 +41,15 @@ impl<'a> IfBuilder<'a> {
 
 #[derive(Debug)]
 pub struct If {
-    conditional: Conditional,
+    cond: Cond,
     then_label: Option<Label>,
     else_label: Option<Label>,
 }
 
 impl If {
-    fn new(conditional: Conditional, then_label: Option<Label>, else_label: Option<Label>) -> Self {
+    fn new(cond: Cond, then_label: Option<Label>, else_label: Option<Label>) -> Self {
         Self {
-            conditional,
+            cond,
             then_label,
             else_label,
         }
@@ -62,7 +62,7 @@ impl ToPlusCal for If {
     fn to_pluscal(&self, indent: usize) -> String {
         let mut s = String::new();
         s.push_str(&format!("{}if ", Self::space(indent)));
-        s.push_str(&self.conditional.to_pluscal(0));
+        s.push_str(&self.cond.to_pluscal(0));
 
         s.push_str(" then");
         s.push(crate::NEW_LINE);

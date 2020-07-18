@@ -1,5 +1,5 @@
 use crate::attr::Attr;
-use crate::cond::Conditional;
+use crate::cond::Cond;
 use crate::if_::{If, IfBuilder};
 use crate::{Instruction, ToPlusCal};
 use std::any::Any;
@@ -13,6 +13,7 @@ pub struct Label {
 #[derive(Debug)]
 pub(crate) enum InstructionType {
     Attr,
+    Assert,
     If,
     Label,
 }
@@ -46,13 +47,18 @@ impl Label {
             .unwrap()
     }
 
+    pub fn assert(&mut self, cond: Cond) {
+        self.instructions
+            .push((InstructionType::Assert, Box::new(cond)));
+    }
+
     pub fn exec(&mut self, attr: Attr) {
         self.instructions
             .push((InstructionType::Attr, Box::new(attr)));
     }
 
-    pub fn if_(&mut self, conditional: Conditional) -> IfBuilder<'_> {
-        IfBuilder::new(self, conditional)
+    pub fn if_(&mut self, cond: Cond) -> IfBuilder<'_> {
+        IfBuilder::new(self, cond)
     }
 }
 
@@ -76,6 +82,10 @@ impl ToPlusCal for Label {
                     let instr = match instr {
                         (InstructionType::Attr, instr) => {
                             instr.downcast_ref::<Attr>().unwrap().to_pluscal(indent)
+                        }
+                        (InstructionType::Assert, instr) => {
+                            let cond = instr.downcast_ref::<Cond>().unwrap().to_pluscal(0);
+                            format!("{}assert {}", Self::space(indent), cond)
                         }
                         (InstructionType::If, instr) => {
                             instr.downcast_ref::<If>().unwrap().to_pluscal(indent)

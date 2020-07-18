@@ -2,11 +2,11 @@ use crate::expr::Expr;
 use crate::ToPlusCal;
 
 #[derive(Debug)]
-pub enum Conditional {
+pub enum Cond {
     Ge(Box<Expr>, Box<Expr>),
 }
 
-impl ToPlusCal for Conditional {
+impl ToPlusCal for Cond {
     fn to_pluscal(&self, indent: usize) -> String {
         match self {
             Self::Ge(left, right) => format!(

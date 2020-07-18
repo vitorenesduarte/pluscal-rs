@@ -23,5 +23,7 @@ trait ToPlusCal {
 }
 
 pub mod prelude {
+    pub const ZERO: Expr = Expr::Num(0);
+    pub use super::expr::Expr;
     pub use super::module::Module;
 }

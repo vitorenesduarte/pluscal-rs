@@ -1,9 +1,10 @@
 use crate::attr::Attr;
-use crate::cond::Conditional;
+use crate::cond::Cond;
 use crate::ToPlusCal;
 
 #[derive(Clone, Debug)]
 pub enum Expr {
+    Num(usize),
     Var(String),
     Plus(Box<Expr>, Box<Expr>),
     Minus(Box<Expr>, Box<Expr>),
@@ -22,8 +23,12 @@ impl Expr {
         }
     }
 
-    pub fn ge(&self, other: &Self) -> Conditional {
-        Conditional::Ge(Box::new(self.clone()), Box::new(other.clone()))
+    pub fn ge(&self, other: &Self) -> Cond {
+        Cond::Ge(Box::new(self.clone()), Box::new(other.clone()))
+    }
+
+    pub fn geq(&self, other: &Self) -> Cond {
+        Cond::Ge(Box::new(self.clone()), Box::new(other.clone()))
     }
 
     pub fn plus(&self, other: &Self) -> Expr {
@@ -38,6 +43,7 @@ impl Expr {
 impl ToPlusCal for Expr {
     fn to_pluscal(&self, indent: usize) -> String {
         let expr = match self {
+            Self::Num(num) => num.to_string(),
             Self::Var(name) => name.clone(),
             Self::Plus(left, right) => format!("{} + {}", left.to_pluscal(0), right.to_pluscal(0)),
             Self::Minus(left, right) => format!("{} - {}", left.to_pluscal(0), right.to_pluscal(0)),

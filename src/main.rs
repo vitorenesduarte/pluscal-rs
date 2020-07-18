@@ -20,6 +20,8 @@ fn main() {
             b.exec(bob.set(bob.plus(&money)));
         })
         .end_if();
+    let c = module.label("C");
+    c.assert(alice.geq(&ZERO));
 
     println!("{}", module);
 }

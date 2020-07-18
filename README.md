@@ -24,6 +24,8 @@ transfer
         b.exec(bob.set(bob.plus(&money)));
     })
     .end_if();
+let c = module.label("C");
+c.assert(alice.geq(&ZERO));
 
 println!("{}", module);
 ```
@@ -42,7 +44,6 @@ variables
     money \in 1..20;
 
 begin
-
 Transfer:
     if alice >= money then
         A:
@@ -50,6 +51,9 @@ Transfer:
         B:
             bob := bob + money;
     end if;
+C:
+    assert alice >= 0
+
 
 end algorithm *)
 ====
