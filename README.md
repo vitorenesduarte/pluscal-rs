@@ -5,29 +5,34 @@ Let's write some PlusCal in Rust!
 ### The What
 
 ```rust
-let mut module = Module::new("transfer");
-module.extends("Naturals");
-module.extends("TLC");
+use pluscal::prelude::*;
 
-let alice = module.natural("alice").value(10);
-let bob = module.natural("bob").value(10);
-let money = module.natural("money").in_range(1, 20);
+fn main() {
+    let mut module = Module::new("transfer");
+    module.extends("Naturals");
+    module.extends("TLC");
 
-let transfer = module.label("Transfer");
-transfer
-    .if_(alice.ge(&money))
-    .then(|ctx| {
-        let a = ctx.label("A");
-        a.exec(alice.set(alice.minus(&money)));
+    let alice = module.natural("alice").value(10);
+    let bob = module.natural("bob").value(10);
+    let money = module.natural("money").in_range(1, 20);
 
-        let b = ctx.label("B");
-        b.exec(bob.set(bob.plus(&money)));
-    })
-    .end_if();
-let c = module.label("C");
-c.assert(alice.geq(&ZERO));
+    let transfer = module.label("Transfer");
+    transfer
+        .if_(alice.ge(&money))
+        .then(|ctx| {
+            let a = ctx.label("A");
+            a.exec(alice.set(alice.minus(&money)));
 
-println!("{}", module);
+            let b = ctx.label("B");
+            b.exec(bob.set(bob.plus(&money)));
+        })
+        .end_if();
+    let c = module.label("C");
+    c.assert(alice.geq(&ZERO));
+
+    println!("{}", module);
+}
+
 ```
 
 The above Rust code outputs (example from the [Learn TLA+ website](https://learntla.com/introduction/example/)):
