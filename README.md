@@ -15,17 +15,17 @@ let money = module.natural("money").in_range(1, 20);
 
 let transfer = module.label("Transfer");
 transfer
-.if_(alice.ge(&money))
-.then(|ctx| {
-    ctx.exec(alice.set(alice.minus(&money)));
-    ctx.exec(bob.set(bob.plus(&money)));
-})
-.end_if();
+    .if_(alice.ge(&money))
+    .then(|ctx| {
+        ctx.exec(alice.set(alice.minus(&money)));
+        ctx.exec(bob.set(bob.plus(&money)));
+    })
+    .end_if();
 
 println!("{}", module);
 ```
 
-The above Rust code outputs:
+The above Rust code outputs (example from the [Learn TLA+ website](https://learntla.com/introduction/example/)):
 
 ```pluscal
 ---- MODULE tranfer ----
